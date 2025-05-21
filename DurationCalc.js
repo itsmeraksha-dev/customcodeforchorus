@@ -1,5 +1,4 @@
-function calculateDuration(start, breakStart, breakEnd, end) 
-{
+function calculateDuration(start, breakStart, breakEnd, end) {
   function toMinutes(t) {
     if (!t || !t.includes(":")) return 0;
     const [h, m] = t.split(":").map(Number);
@@ -20,4 +19,16 @@ function calculateDuration(start, breakStart, breakEnd, end)
   const hrs = Math.floor(netDuration / 60);
   const mins = netDuration % 60;
   return `${hrs}h ${mins}m`;
+}
+
+// This is the function UX Builder will call when the button is clicked
+function onCalculateDuration(formData, updateFormData) {
+  const result = calculateDuration(
+    formData.startTime,
+    formData.breakStart,
+    formData.breakEnd,
+    formData.endTime
+  );
+
+  updateFormData({ duration: result });
 }
