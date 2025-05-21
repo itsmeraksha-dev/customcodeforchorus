@@ -30,7 +30,7 @@ function calculateDuration(start, breakStart, breakEnd, end) {
  * Iterates over Timesheet_Table and calculates durations per row.
  */
 function onCalculateDuration(formData, updateFormData) {
-  const updatedRows = formData.Timesheet_Table.map(row => {
+  const updatedRows = formData.Timesheet.map(row => {
     const duration = calculateDuration(
       row.startTime,
       row.breakStart,
@@ -45,6 +45,6 @@ function onCalculateDuration(formData, updateFormData) {
   });
 
   updateFormData({
-    Timesheet_Table: updatedRows
+    Timesheet: updatedRows
   });
 }
