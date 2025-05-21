@@ -1,3 +1,7 @@
+/**
+ * Utility function to calculate duration in hours and minutes.
+ * Expects time strings in "HH:MM" 24-hour format.
+ */
 function calculateDuration(start, breakStart, breakEnd, end) {
   function toMinutes(t) {
     if (!t || !t.includes(":")) return 0;
@@ -21,14 +25,26 @@ function calculateDuration(start, breakStart, breakEnd, end) {
   return `${hrs}h ${mins}m`;
 }
 
-// This is the function UX Builder will call when the button is clicked
+/**
+ * Function triggered by a button with action: "onCalculateDuration"
+ * Iterates over Timesheet_Table and calculates durations per row.
+ */
 function onCalculateDuration(formData, updateFormData) {
-  const result = calculateDuration(
-    formData.startTime,
-    formData.breakStart,
-    formData.breakEnd,
-    formData.endTime
-  );
+  const updatedRows = formData.Timesheet_Table.map(row => {
+    const duration = calculateDuration(
+      row.startTime,
+      row.breakStart,
+      row.breakEnd,
+      row.endTime
+    );
 
-  updateFormData({ duration: result });
+    return {
+      ...row,
+      duration: duration
+    };
+  });
+
+  updateFormData({
+    Timesheet_Table: updatedRows
+  });
 }
