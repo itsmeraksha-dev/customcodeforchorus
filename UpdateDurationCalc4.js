@@ -1,7 +1,4 @@
-/**
- * Utility function to calculate duration in hours and minutes.
- * Expects time strings in "HH:MM" 24-hour format.
- */
+// Utility function to calculate total work duration excluding break time
 function calculateDuration(start, breakStart, breakEnd, end) {
   function toMinutes(t) {
     if (!t || !t.includes(":")) return 0;
@@ -25,18 +22,26 @@ function calculateDuration(start, breakStart, breakEnd, end) {
   return `${hrs}h ${mins}m`;
 }
 
-/**
- * Function triggered by a button with action: "onCalculateDuration"
- * Iterates over Timesheet_Table and calculates durations per row.
- */
+// Button-triggered function (action: "onCalculateDuration")
 function onCalculateDuration(formData, updateFormData) {
-  const updatedRows = formData.Timesheet.map(row => {
+  console.log("🟢 Button clicked. formData:", formData);
+
+  if (!formData.Timesheet || !Array.isArray(formData.Timesheet)) {
+    console.error("❌ Timesheet table not found in formData.");
+    return;
+  }
+
+  const updatedRows = formData.Timesheet.map((row, index) => {
+    console.log(`🔍 Processing row ${index + 1}:`, row);
+
     const duration = calculateDuration(
       row.startTime,
       row.breakStart,
       row.breakEnd,
       row.endTime
     );
+
+    console.log(`✅ Row ${index + 1} duration:`, duration);
 
     return {
       ...row,
@@ -47,4 +52,6 @@ function onCalculateDuration(formData, updateFormData) {
   updateFormData({
     Timesheet: updatedRows
   });
+
+  console.log("✅ All rows updated and pushed to form.");
 }
