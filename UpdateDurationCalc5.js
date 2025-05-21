@@ -24,11 +24,8 @@ function calculateDuration(start, breakStart, breakEnd, end) {
 
 // Button-triggered function (action: "onCalculateDuration")
 function onCalculateDuration(formData, updateFormData) {
-  console.log("🟢 Button clicked. formData:", formData);
+  console.log("🟢 formData keys:", Object.keys(formData));
 
-  if (!formData.Timesheet || !Array.isArray(formData.Timesheet)) {
-    console.error("❌ Timesheet table not found in formData.");
-    return;
   }
 
   const updatedRows = formData.Timesheet.map((row, index) => {
