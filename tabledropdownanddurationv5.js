@@ -66,14 +66,14 @@ function updateDurationForRow(inputElement) {
   const inputs = rowContainer.querySelectorAll("input.p-inputtext");
 
   // Assumes input order: [0]=startTime, [1]=breakStart, [2]=breakEnd, [3]=endTime, [4]=totalDuration
-  const start = inputs[0]?.value || "";
-  const breakStart = inputs[1]?.value || "";
-  const breakEnd = inputs[2]?.value || "";
-  const end = inputs[3]?.value || "";
+  const start = inputs[1]?.value || "";
+  const breakStart = inputs[2]?.value || "";
+  const breakEnd = inputs[3]?.value || "";
+  const end = inputs[4]?.value || "";
 
   const duration = calculateDuration(start, breakStart, breakEnd, end);
 
-  const totalDurationInput = inputs[4];
+  const totalDurationInput = inputs[5];
   if (totalDurationInput) {
     totalDurationInput.value = duration;
   }
