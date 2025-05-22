@@ -82,4 +82,30 @@ function updateDurationForRow(inputElement) {
   );
 
   if (totalDurationCell) {
-    const input = total
+    const input = totalDurationCell.querySelector("input");
+    if (input) input.value = duration;
+  }
+}
+
+// Observe for table fields dynamically inserted into the DOM
+const observer = new MutationObserver((mutations) => {
+  mutations.forEach(mutation => {
+    mutation.addedNodes.forEach(node => {
+      if (node.nodeType === 1) {
+        const inputElement = node.querySelector("input.p-inputtext.p-component");
+        if (inputElement) {
+          const parentDiv = inputElement.closest(".p-d-flex.p-flex-between");
+          if (parentDiv) {
+            const fieldLabel = parentDiv.querySelector(".rowValue")?.textContent.trim();
+            if (["startTime", "breakStart", "breakEnd", "endTime"].includes(fieldLabel)) {
+              replaceInputWithDropdown(inputElement, fieldLabel);
+            }
+          }
+        }
+      }
+    });
+  });
+});
+
+observer.observe(document.body, { childList: true, subtree: true });
+
