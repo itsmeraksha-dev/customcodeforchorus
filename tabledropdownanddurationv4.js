@@ -58,12 +58,14 @@ function calculateDuration(start, breakStart, breakEnd, end) {
   return `${hrs}h ${mins}m`;
 }
 
+// ✅ Only this function is updated
 function updateDurationForRow(inputElement) {
   const rowContainer = inputElement.closest(".p-datatable-row");
   if (!rowContainer) return;
 
   const inputs = rowContainer.querySelectorAll("input.p-inputtext");
 
+  // Assumes input order: [0]=startTime, [1]=breakStart, [2]=breakEnd, [3]=endTime, [4]=totalDuration
   const start = inputs[0]?.value || "";
   const breakStart = inputs[1]?.value || "";
   const breakEnd = inputs[2]?.value || "";
@@ -77,7 +79,7 @@ function updateDurationForRow(inputElement) {
   }
 }
 
-// Observe for table fields dynamically inserted into the DOM
+// 🧿 DOM observer (unchanged)
 const observer = new MutationObserver((mutations) => {
   mutations.forEach(mutation => {
     mutation.addedNodes.forEach(node => {
