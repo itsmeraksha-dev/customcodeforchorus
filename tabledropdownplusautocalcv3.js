@@ -58,48 +58,40 @@ function calculateDuration(start, breakStart, breakEnd, end) {
   return `${hrs}h ${mins}m`;
 }
 
-function updateDurationForRow(inputElement) {
-  const rowContainer = inputElement.closest(".p-datatable-row");
+function updateDurationForRow(changedInput) {
+  const rowContainer = changedInput.closest(".p-datatable-row");
 
   if (!rowContainer) return;
 
-  const getFieldValue = (label) => {
-    const cell = [...rowContainer.querySelectorAll(".p-d-flex.p-flex-between")].find(div =>
-      div.querySelector(".rowValue")?.textContent.trim() === label
-    );
-    return cell?.querySelector("input")?.value;
+  // Get all inputs in the row
+  const getInputValueByName = (fieldName) => {
+    return rowContainer.querySelector(`input[name="${fieldName}"]`)?.value || "";
   };
 
-  const start = getFieldValue("startTime");
-  const breakStart = getFieldValue("breakStart");
-  const breakEnd = getFieldValue("breakEnd");
-  const end = getFieldValue("endTime");
+  const start = getInputValueByName("startTime");
+  const breakStart = getInputValueByName("breakStart");
+  const breakEnd = getInputValueByName("breakEnd");
+  const end = getInputValueByName("endTime");
 
   const duration = calculateDuration(start, breakStart, breakEnd, end);
 
-  const totalDurationCell = [...rowContainer.querySelectorAll(".p-d-flex.p-flex-between")].find(div =>
-    div.querySelector(".rowValue")?.textContent.trim() === "totalDuration"
-  );
-
-  if (totalDurationCell) {
-    const input = totalDurationCell.querySelector("input");
-    if (input) input.value = duration;
+  // Set totalDuration input
+  const totalDurationInput = rowContainer.querySelector(`input[name="totalDuration"]`);
+  if (totalDurationInput) {
+    totalDurationInput.value = duration;
   }
 }
 
-// Observe for table fields dynamically inserted into the DOM
+// Observe for dynamically inserted inputs and attach dropdowns
 const observer = new MutationObserver((mutations) => {
   mutations.forEach(mutation => {
     mutation.addedNodes.forEach(node => {
       if (node.nodeType === 1) {
         const inputElement = node.querySelector("input.p-inputtext.p-component");
         if (inputElement) {
-          const parentDiv = inputElement.closest(".p-d-flex.p-flex-between");
-          if (parentDiv) {
-            const fieldLabel = parentDiv.querySelector(".rowValue")?.textContent.trim();
-            if (["startTime", "breakStart", "breakEnd", "endTime"].includes(fieldLabel)) {
-              replaceInputWithDropdown(inputElement, fieldLabel);
-            }
+          const fieldName = inputElement.getAttribute("name");
+          if (["startTime", "breakStart", "breakEnd", "endTime"].includes(fieldName)) {
+            replaceInputWithDropdown(inputElement, fieldName);
           }
         }
       }
@@ -108,4 +100,3 @@ const observer = new MutationObserver((mutations) => {
 });
 
 observer.observe(document.body, { childList: true, subtree: true });
-
