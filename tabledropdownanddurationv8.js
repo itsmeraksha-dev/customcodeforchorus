@@ -1,3 +1,4 @@
+// Add dropdowns and listen for changes
 function replaceInputWithDropdown(inputElement, fieldName) {
   if (!inputElement || inputElement.hasAttribute("list")) return;
 
@@ -31,12 +32,14 @@ function replaceInputWithDropdown(inputElement, fieldName) {
   }
 }
 
+// Convert time string to minutes
 function toMinutes(t) {
   if (!t || !t.includes(":")) return null;
   const [h, m] = t.split(":").map(Number);
   return h * 60 + m;
 }
 
+// Calculate net work duration
 function calculateDuration(start, breakStart, breakEnd, end) {
   const startMin = toMinutes(start);
   const breakStartMin = toMinutes(breakStart);
@@ -59,6 +62,7 @@ function calculateDuration(start, breakStart, breakEnd, end) {
   return `${hrs}:${mins}`; // HH:MM format
 }
 
+// Live update per row (on change)
 function liveUpdateDurationIfAllFilled(inputElement) {
   const rowContainer = inputElement.closest(".p-datatable-row") || inputElement.closest(".row-editor-container");
   if (!rowContainer) return;
@@ -85,13 +89,35 @@ function liveUpdateDurationIfAllFilled(inputElement) {
       if (input) {
         input.value = duration;
         input.readOnly = true;
-        input.style.backgroundColor = "#f0f0f0"; // Optional: grey it out
+        input.style.backgroundColor = "#f0f0f0";
       }
     }
   }
 }
 
-// Observer for dynamically loaded table rows
+// Bulk update when button is clicked
+function onUpdateAllDurations(formData, updateFormData) {
+  const rows = formData?.TimesheetTable || [];
+
+  const updatedRows = rows.map(row => {
+    const duration = calculateDuration(
+      row.startTime,
+      row.breakStart,
+      row.breakEnd,
+      row.endTime
+    );
+    return {
+      ...row,
+      totalDuration: duration || ""
+    };
+  });
+
+  updateFormData({
+    TimesheetTable: updatedRows
+  });
+}
+
+// Attach dropdowns and mark totalDuration as read-only
 const observer = new MutationObserver((mutations) => {
   mutations.forEach(mutation => {
     mutation.addedNodes.forEach(node => {
