@@ -58,31 +58,27 @@ function calculateDuration(start, breakStart, breakEnd, end) {
   return `${hrs}h ${mins}m`;
 }
 
-function updateDurationForRow(changedInput) {
-  const rowContainer = changedInput.closest(".p-datatable-row");
-
+function updateDurationForRow(inputElement) {
+  const rowContainer = inputElement.closest(".p-datatable-row");
   if (!rowContainer) return;
 
-  // Get all inputs in the row
-  const getInputValueByName = (fieldName) => {
-    return rowContainer.querySelector(`input[name="${fieldName}"]`)?.value || "";
-  };
+  const getValue = (name) =>
+    rowContainer.querySelector(`input[name="${name}"]`)?.value || "";
 
-  const start = getInputValueByName("startTime");
-  const breakStart = getInputValueByName("breakStart");
-  const breakEnd = getInputValueByName("breakEnd");
-  const end = getInputValueByName("endTime");
+  const start = getValue("startTime");
+  const breakStart = getValue("breakStart");
+  const breakEnd = getValue("breakEnd");
+  const end = getValue("endTime");
 
   const duration = calculateDuration(start, breakStart, breakEnd, end);
 
-  // Set totalDuration input
   const totalDurationInput = rowContainer.querySelector(`input[name="totalDuration"]`);
   if (totalDurationInput) {
     totalDurationInput.value = duration;
   }
 }
 
-// Observe for dynamically inserted inputs and attach dropdowns
+// Observe new input fields dynamically added to the DOM
 const observer = new MutationObserver((mutations) => {
   mutations.forEach(mutation => {
     mutation.addedNodes.forEach(node => {
