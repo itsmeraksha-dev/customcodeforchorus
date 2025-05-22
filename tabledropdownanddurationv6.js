@@ -58,28 +58,28 @@ function calculateDuration(start, breakStart, breakEnd, end) {
   return `${hrs}h ${mins}m`;
 }
 
-// ✅ Only this function is updated
-function updateDurationForRow(inputElement) {
-  const rowContainer = inputElement.closest(".p-datatable-row");
-  if (!rowContainer) return;
+// ✅ Now reading from cell text instead of input
+function updateDurationForRow(cellElement) {
+  const row = cellElement.closest(".p-datatable-row");
+  if (!row) return;
 
-  const inputs = rowContainer.querySelectorAll("input.p-inputtext");
+  const cells = row.querySelectorAll("td");
+  const getText = (index) => cells[index]?.querySelector("div")?.textContent.trim() || "";
 
-  // Assumes input order: [0]=startTime, [1]=breakStart, [2]=breakEnd, [3]=endTime, [4]=totalDuration
-  const start = inputs[1]?.value || "";
-  const breakStart = inputs[2]?.value || "";
-  const breakEnd = inputs[3]?.value || "";
-  const end = inputs[4]?.value || "";
+  const start = getText(1);
+  const breakStart = getText(2);
+  const breakEnd = getText(3);
+  const end = getText(4);
 
   const duration = calculateDuration(start, breakStart, breakEnd, end);
 
-  const totalDurationInput = inputs[5];
-  if (totalDurationInput) {
-    totalDurationInput.value = duration;
+  const durationDiv = cells[5]?.querySelector("div");
+  if (durationDiv) {
+    durationDiv.textContent = duration;
   }
 }
 
-// 🧿 DOM observer (unchanged)
+// 🧿 Mutation observer: still attaches dropdown if inputs appear
 const observer = new MutationObserver((mutations) => {
   mutations.forEach(mutation => {
     mutation.addedNodes.forEach(node => {
