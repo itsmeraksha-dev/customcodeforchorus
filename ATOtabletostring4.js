@@ -8,16 +8,8 @@ function extractTableData() {
     const cells = row.querySelectorAll('td div');
     if (cells.length >= 6) {
       const dateText = cells[0]?.textContent.trim();
-      const parsedDate = new Date(dateText);
-      
-      let formattedDate = "";
-      if (!isNaN(parsedDate)) {
-        const year = parsedDate.getFullYear();
-        const month = (parsedDate.getMonth() + 1).toString().padStart(2, "0");
-        const day = parsedDate.getDate().toString().padStart(2, "0");
-        formattedDate = `${year}-${month}-${day}`;
-      }
-
+      const dateObj = new Date(dateText);
+      const formattedDate = `${dateObj.getFullYear()}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}-${dateObj.getDate().toString().padStart(2, '0')}`;
       const startTime = cells[1]?.textContent.trim();
       const breakStart = cells[2]?.textContent.trim();
       const breakEnd = cells[3]?.textContent.trim();
@@ -39,6 +31,10 @@ function extractTableData() {
   // Send to UX Builder
   UXBClientAPI.setDataSourceValues({ tableString: jsonString });
 }
+
+// Set up a MutationObserver to auto-run when the table updates
+// Observer for table data extraction
+
 
 function toMinutes(timeStr) {
   if (!timeStr || !timeStr.includes(":")) return null;
@@ -94,7 +90,6 @@ const tableWatcher = new MutationObserver(() => {
   updateTotalDurations();
 });
 tableWatcher.observe(tableBody, { childList: true, subtree: true });
-
 // Initial run
 extractTableData();
 updateTotalDurations();
