@@ -87,14 +87,14 @@ function updateTotalDurations() {
 
     if (cells.length < 7) return;
 
-    const start = cells[2]?.textContent.trim();
-    const breakStart = cells[3]?.textContent.trim();
-    const breakEnd = cells[4]?.textContent.trim();
-    const end = cells[5]?.textContent.trim();
+    const start = cells[1]?.textContent.trim();
+    const breakStart = cells[2]?.textContent.trim();
+    const breakEnd = cells[3]?.textContent.trim();
+    const end = cells[4]?.textContent.trim();
 
     const duration = calculateDuration(start, breakStart, breakEnd, end);
 
-    const durationCell = cells[6];
+    const durationCell = cells[5];
     if (durationCell) {
       durationCell.textContent = duration;
     }
