@@ -4,17 +4,33 @@ function extractTableData() {
   const rows = tableBody.querySelectorAll('tr');
   const data = [];
 
-  rows.forEach(row => {
+  rows.forEach((row, rowIndex) => {
     const cells = row.querySelectorAll('td div');
     if (cells.length >= 6) {
       const dateText = cells[0]?.textContent.trim();
       const dateObj = new Date(dateText);
       const formattedDate = `${dateObj.getFullYear()}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}-${dateObj.getDate().toString().padStart(2, '0')}`;
+
       const startTime = cells[1]?.textContent.trim();
       const breakStart = cells[2]?.textContent.trim();
       const breakEnd = cells[3]?.textContent.trim();
       const endTime = cells[4]?.textContent.trim();
       const totalDuration = cells[5]?.textContent.trim();
+
+      const startMin = toMinutes(startTime);
+      const breakStartMin = toMinutes(breakStart);
+      const breakEndMin = toMinutes(breakEnd);
+      const endMin = toMinutes(endTime);
+
+      let isValid = true;
+      if (breakStartMin !== null && startMin !== null && breakStartMin < startMin) isValid = false;
+      if (breakEndMin !== null && ((startMin !== null && breakEndMin < startMin) || (breakStartMin !== null && breakEndMin < breakStartMin))) isValid = false;
+      if (endMin !== null && ((startMin !== null && endMin < startMin) || (breakStartMin !== null && endMin < breakStartMin) || (breakEndMin !== null && endMin < breakEndMin))) isValid = false;
+
+      if (!isValid) {
+        row.style.backgroundColor = "#ffe6e6"; // highlight invalid row (optional)
+        return; // skip adding this row to data
+      }
 
       data.push({
         Date: formattedDate,
@@ -31,6 +47,7 @@ function extractTableData() {
   // Send to UX Builder
   UXBClientAPI.setDataSourceValues({ tableString: jsonString });
 }
+
 
 // Set up a MutationObserver to auto-run when the table updates
 // Observer for table data extraction
