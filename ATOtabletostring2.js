@@ -35,7 +35,12 @@ function extractTableData() {
     const cells = row.querySelectorAll('td div');
     if (cells.length >= 7) {
       const dateText = cells[1]?.textContent.trim(); // Adjusted index
-      const formattedDate = new Date(dateText).toISOString().split('T')[0];
+      if (!dateText) return;
+
+      const parsedDate = new Date(dateText);
+      if (isNaN(parsedDate)) return;
+
+      const formattedDate = parsedDate.toISOString().split('T')[0];
 
       const startTime = cells[2]?.textContent.trim();
       const breakStart = cells[3]?.textContent.trim();
@@ -55,6 +60,7 @@ function extractTableData() {
   });
 
   const jsonString = JSON.stringify(data);
+  console.log("Extracted Table JSON:", jsonString);
   UXBClientAPI.setDataSourceValues({ tableString: jsonString });
 }
 
@@ -66,7 +72,6 @@ function updateTotalDurations() {
 
   rows.forEach(row => {
     const cells = row.querySelectorAll("td div");
-
     if (cells.length < 7) return;
 
     const start = cells[2]?.textContent.trim();
@@ -83,14 +88,9 @@ function updateTotalDurations() {
   });
 }
 
-function initTableWatcher(retries = 10) {
+function initTableWatcher() {
   const tableBody = document.querySelector('.p-datatable-tbody');
-  if (!tableBody) {
-    if (retries > 0) {
-      setTimeout(() => initTableWatcher(retries - 1), 500); // Retry after 500ms
-    }
-    return;
-  }
+  if (!tableBody) return;
 
   const observer = new MutationObserver(() => {
     extractTableData();
@@ -101,10 +101,4 @@ function initTableWatcher(retries = 10) {
 
   // Initial run
   extractTableData();
-  updateTotalDurations();
-}
-
-// Wait for DOM load, then try to find table
-window.addEventListener('DOMContentLoaded', () => {
-  initTableWatcher();
-});
+  updat
