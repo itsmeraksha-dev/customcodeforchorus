@@ -28,8 +28,8 @@ function extractTableData() {
       if (endMin !== null && ((startMin !== null && endMin < startMin) || (breakStartMin !== null && endMin < breakStartMin) || (breakEndMin !== null && endMin < breakEndMin))) isValid = false;
 
       if (!isValid) {
-        row.style.backgroundColor = "#ffe6e6"; // highlight invalid row (optional)
-        return; // skip adding this row to data
+        row.style.backgroundColor = "#ffe6e6"; // optional: highlight invalid row
+        return; // skip this row
       }
 
       data.push({
@@ -44,14 +44,8 @@ function extractTableData() {
   });
 
   const jsonString = JSON.stringify(data);
-  // Send to UX Builder
   UXBClientAPI.setDataSourceValues({ tableString: jsonString });
 }
-
-
-// Set up a MutationObserver to auto-run when the table updates
-// Observer for table data extraction
-
 
 function toMinutes(timeStr) {
   if (!timeStr || !timeStr.includes(":")) return null;
@@ -101,7 +95,7 @@ function updateTotalDurations() {
   });
 }
 
-// Run it
+// Observe table changes
 const tableWatcher = new MutationObserver(() => {
   extractTableData();
   updateTotalDurations();
@@ -109,10 +103,26 @@ const tableWatcher = new MutationObserver(() => {
 tableWatcher.observe(tableBody, {
   childList: true,
   subtree: true,
-  characterData: true, // NEW: watch content changes inside cells
+  characterData: true,
   characterDataOldValue: true
 });
 
 // Initial run
 extractTableData();
 updateTotalDurations();
+
+// Add event listener to Save button
+document.addEventListener('DOMContentLoaded', () => {
+  const buttons = document.querySelectorAll('button.dialog-button');
+
+  buttons.forEach(btn => {
+    if (btn.textContent.trim() === 'Save') {
+      btn.addEventListener('click', () => {
+        setTimeout(() => {
+          extractTableData();
+          updateTotalDurations();
+        }, 300);
+      });
+    }
+  });
+});
