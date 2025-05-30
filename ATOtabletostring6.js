@@ -106,7 +106,13 @@ const tableWatcher = new MutationObserver(() => {
   extractTableData();
   updateTotalDurations();
 });
-tableWatcher.observe(tableBody, { childList: true, subtree: true });
+tableWatcher.observe(tableBody, {
+  childList: true,
+  subtree: true,
+  characterData: true, // NEW: watch content changes inside cells
+  characterDataOldValue: true
+});
+
 // Initial run
 extractTableData();
 updateTotalDurations();
